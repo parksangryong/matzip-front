@@ -8,7 +8,11 @@ const DrawerNavigator = () => {
   const Drawer = createDrawerNavigator();
 
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+      screenOptions={{
+        drawerType: 'front',
+        overlayColor: 'rgba(0, 0, 0, 0.5)',
+      }}>
       <Drawer.Screen name="Home" component={AuthStackNavigator} />
     </Drawer.Navigator>
   );
