@@ -8,13 +8,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 // 네비게이션 스택
-import DrawerNavigator from './src/navigation/DrawerNavigator';
+import RootNavigator from './src/navigations/root/RootNavigator';
 
 const App = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <DrawerNavigator />
+        <RootNavigator />
       </NavigationContainer>
     </SafeAreaProvider>
   );
