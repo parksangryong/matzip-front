@@ -19,7 +19,22 @@ const LoginScreen = () => {
   };
 
   const handleBlur = (name: string) => {
-    setTouched({...touched, [name]: true});
+    switch (name) {
+      case 'email':
+        if (values.email === '' || !values.email.includes('@')) {
+          setTouched({...touched, email: true});
+        } else {
+          setTouched({...touched, email: false});
+        }
+        break;
+      case 'password':
+        if (values.password === '' || values.password.length < 8) {
+          setTouched({...touched, password: true});
+        } else {
+          setTouched({...touched, password: false});
+        }
+        break;
+    }
   };
 
   return (
