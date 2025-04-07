@@ -4,6 +4,7 @@ import {
   StyleSheet,
   PressableProps,
   Dimensions,
+  View,
 } from 'react-native';
 
 // 상수
@@ -29,13 +30,14 @@ const CustomButton = ({
     <Pressable
       style={({pressed}) => [
         styles.container,
-        styles[size],
         inValid && styles.inValid,
         pressed ? styles[`${variant}Pressed`] : styles[variant],
       ]}
       disabled={inValid}
       {...props}>
-      <Text style={[styles.text, styles[`${variant}Text`]]}>{label}</Text>
+      <View style={styles[size]}>
+        <Text style={[styles.text, styles[`${variant}Text`]]}>{label}</Text>
+      </View>
     </Pressable>
   );
 };
@@ -44,13 +46,14 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   filled: {
-    backgroundColor: colors.PINK_700,
+    backgroundColor: colors.brand.PINK_700,
   },
   outlined: {
     borderWidth: 1,
-    borderColor: colors.PINK_700,
+    borderColor: colors.brand.PINK_700,
   },
   inValid: {
     opacity: 0.5,
@@ -59,27 +62,31 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: deviceHeight > 700 ? 15 : 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   medium: {
     width: '50%',
     paddingVertical: deviceHeight > 700 ? 12 : 8,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   text: {
     fontSize: 16,
     fontWeight: 700,
   },
   filledText: {
-    color: colors.WHITE,
+    color: colors.grayScale.WHITE,
   },
   outlinedText: {
-    color: colors.PINK_700,
+    color: colors.brand.PINK_700,
   },
   filledPressed: {
-    backgroundColor: colors.PINK_500,
+    backgroundColor: colors.system.PINK_500,
   },
   outlinedPressed: {
-    borderColor: colors.PINK_700,
+    borderColor: colors.brand.PINK_700,
     borderWidth: 1,
     opacity: 0.5,
   },

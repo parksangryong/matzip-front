@@ -6,9 +6,9 @@ import AuthHomeScreen from '../../screens/auth/AuthHomeScreen';
 import LoginScreen from '../../screens/auth/LoginScreen';
 import SignupScreen from '../../screens/auth/SignupScreen';
 
-// 네비게이션 상수
+//  상수
 import {authNavigations} from '../../constants';
-
+import {colors} from '../../constants';
 // 네비게이션 타입
 export type AuthStackParamList = {
   [authNavigations.AUTH_HOME]: undefined;
@@ -24,12 +24,12 @@ const AuthStackNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: 'white',
+          backgroundColor: colors.grayScale.WHITE,
         },
         headerTitleStyle: {
           fontSize: 15,
         },
-        headerTintColor: 'black',
+        headerTintColor: colors.grayScale.BLACK,
       }}>
       <Stack.Screen
         name={authNavigations.AUTH_HOME}
