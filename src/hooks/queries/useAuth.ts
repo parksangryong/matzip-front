@@ -1,125 +1,126 @@
+import {useEffect} from 'react';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {
-  postSignup,
-  postLogin,
   getAccessToken,
-  ResponseToken,
   getProfile,
   logout,
+  postLogin,
+  postSignup,
 } from '../../api/auth';
-
 import {
-  useMutatuonCustomOptions,
-  useQueryCustomOptions,
+  UseMutationCustomOptions,
+  UseQueryCustomOptions,
 } from '../../types/common';
-
 import {
-  setEncryptStorage,
-  setHeader,
-  removeHeader,
   removeEncryptStorage,
+  setEncryptStorage,
+  removeHeader,
+  setHeader,
 } from '../../utils';
-import {useEffect} from 'react';
 import queryClient from '../../api/queryClient';
+import {numbers, queryKeys, storageKeys} from '../../constants';
 
-// 회원가입을 위한 훅
-const useSignup = (mutationOptions?: useMutatuonCustomOptions) => {
+// 회원가입 훅
+function useSignup(mutaionOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postSignup,
-    ...mutationOptions,
+    ...mutaionOptions,
   });
-};
+}
 
-// 로그인을 위한 훅
-const useLogin = (mutationOptions?: useMutatuonCustomOptions) => {
+// 로그인 훅
+function useLogin(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: postLogin,
-    // 성공 시 헤더 설정: refreshToken 저장, Authorization 헤더 설정
-    onSuccess: ({refreshToken, accessToken}) => {
-      setEncryptStorage('refreshToken', refreshToken);
+    onSuccess: ({accessToken, refreshToken}) => {
+      setEncryptStorage(storageKeys.REFRESH_TOKEN, refreshToken);
       setHeader('Authorization', `Bearer ${accessToken}`);
     },
-    // 성공 실패 상관없이 항상 실행 : 토큰 만료 시 토큰 갱신 위해 항상 실행
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: ['auth', 'getAccessToken']});
-      queryClient.invalidateQueries({queryKey: ['auth', 'getProfile']});
+      queryClient.refetchQueries({
+        queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
+      });
     },
     ...mutationOptions,
   });
-};
+}
 
-// 토큰 갱신을 위한 훅
-const useGetRefreshToken = () => {
-  const {isSuccess, data, isError} = useQuery<ResponseToken>({
-    queryKey: ['auth', 'getAccessToken'],
+// 리프레시 토큰 확인 후 액세스 토큰 갱신 훅
+function useGetRefreshToken() {
+  const {isSuccess, data, isError} = useQuery({
+    queryKey: [queryKeys.AUTH, queryKeys.GET_ACCESS_TOKEN],
     queryFn: getAccessToken,
-    // 27분 마다 자동으로 토큰 갱신
-    staleTime: 1000 * 60 * 30 - 1000 * 60 * 3,
-    refetchInterval: 1000 * 60 * 30 - 1000 * 60 * 3,
-    // 네트워크 재연결 시 자동으로 토큰 갱신
+    // 액세스 토큰 갱신 시간
+    staleTime: numbers.ACCESS_TOKEN_REFRESH_TIME,
+    refetchInterval: numbers.ACCESS_TOKEN_REFRESH_TIME,
+    // 네트워크 재연결 시 자동 갱신
     refetchOnReconnect: true,
-    // 백그라운드에서 자동으로 토큰 갱신
+    // 백그라운드에서 자동 갱신
     refetchIntervalInBackground: true,
   });
 
   useEffect(() => {
     if (isSuccess) {
-      setHeader('Authorization', `Bearer ${data?.accessToken}`);
-      setEncryptStorage('refreshToken', data?.refreshToken);
+      setHeader('Authorization', `Bearer ${data.accessToken}`);
+      setEncryptStorage(storageKeys.REFRESH_TOKEN, data.refreshToken);
     }
   }, [isSuccess, data]);
 
   useEffect(() => {
     if (isError) {
       removeHeader('Authorization');
+      removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     }
   }, [isError]);
 
   return {isSuccess, isError};
-};
+}
 
-// 프로필 조회를 위한 훅
-const useGetProfile = (queryOptions?: useQueryCustomOptions) => {
+// 프로필 조회 훅
+function useGetProfile(queryOptions?: UseQueryCustomOptions) {
   return useQuery({
-    queryKey: ['auth', 'getProfile'],
+    queryKey: [queryKeys.AUTH, queryKeys.GET_PROFILE],
     queryFn: getProfile,
     ...queryOptions,
   });
-};
+}
 
-// 로그아웃을 위한 훅
-const useLogout = (mutationOptions?: useMutatuonCustomOptions) => {
+// 로그아웃 훅
+function useLogout(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
       removeHeader('Authorization');
-      removeEncryptStorage('refreshToken');
+      removeEncryptStorage(storageKeys.REFRESH_TOKEN);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({queryKey: ['auth']});
+      queryClient.invalidateQueries({queryKey: [queryKeys.AUTH]});
     },
     ...mutationOptions,
   });
-};
+}
 
-// 회원 관련 훅
-const useAuth = () => {
+// 인증 훅
+function useAuth() {
   const signupMutation = useSignup();
   const refreshTokenQuery = useGetRefreshToken();
-  const logoutMutation = useLogout();
   const getProfileQuery = useGetProfile({
     enabled: refreshTokenQuery.isSuccess,
   });
   const isLogin = getProfileQuery.isSuccess;
   const loginMutation = useLogin();
+  const logoutMutation = useLogout();
 
   return {
     signupMutation,
     loginMutation,
-    getProfileQuery,
     isLogin,
+    getProfileQuery,
     logoutMutation,
   };
-};
+}
 
 export default useAuth;

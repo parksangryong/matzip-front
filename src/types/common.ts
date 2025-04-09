@@ -13,15 +13,15 @@ type ResponseError = AxiosError<{
 }>;
 
 // React Query의 mutation 옵션을 커스터마이징한 타입
-type useMutatuonCustomOptions<TData = unknown, TVariables = unknown> = Omit<
+type UseMutationCustomOptions<TData = unknown, TVariables = unknown> = Omit<
   UseMutationOptions<TData, Error, TVariables, unknown>,
   'mutationFn'
 >;
 
 // React Query의 query 옵션을 커스터마이징한 타입
-type useQueryCustomOptions<TQueryFnData = unknown, TData = TQueryFnData> = Omit<
+type UseQueryCustomOptions<TQueryFnData = unknown, TData = TQueryFnData> = Omit<
   UseQueryOptions<TQueryFnData, Error, TData, QueryKey>,
   'queryKey'
 >;
 
-export type {ResponseError, useMutatuonCustomOptions, useQueryCustomOptions};
+export type {ResponseError, UseMutationCustomOptions, UseQueryCustomOptions};
