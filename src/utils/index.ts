@@ -5,3 +5,4 @@ export {
   getEncryptStorage,
   removeEncryptStorage,
 } from './encryptStorage';
+export {setHeader, removeHeader} from './header';

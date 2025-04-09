@@ -25,7 +25,7 @@ const postLogin = async ({
   email,
   password,
 }: RequestUser): Promise<ResponseToken> => {
-  const {data} = await axiosInstance.post('auth/login', {
+  const {data} = await axiosInstance.post('auth/signin', {
     email,
     password,
   });

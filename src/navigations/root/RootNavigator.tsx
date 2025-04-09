@@ -3,10 +3,13 @@ import React from 'react';
 import MainDrawerNavigator from '../drawer/MainDrawerNavigator';
 import AuthStackNavigator from '../stack/AuthStackNavigator';
 
-const RootNavigator = () => {
-  const isLoggedIn = false;
+// 회원 관련 훅
+import useAuth from '../../hooks/queries/useAuth';
 
-  return <>{isLoggedIn ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
+const RootNavigator = () => {
+  const {isLogin} = useAuth();
+
+  return <>{isLogin ? <MainDrawerNavigator /> : <AuthStackNavigator />}</>;
 };
 
 export default RootNavigator;

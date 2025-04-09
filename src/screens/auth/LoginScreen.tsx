@@ -14,8 +14,12 @@ import useForm from '../../hooks/useForm';
 // utils
 import {validateLogin} from '../../utils';
 
+// 회원 관련 훅
+import useAuth from '../../hooks/queries/useAuth';
+
 const LoginScreen = () => {
   const passwordRef = useRef<TextInput | null>(null);
+  const {loginMutation} = useAuth();
 
   const loginForm = useForm({
     initialValues: {
@@ -26,7 +30,7 @@ const LoginScreen = () => {
   });
 
   const handleSubmit = () => {
-    console.log(loginForm.values);
+    loginMutation.mutate(loginForm.values);
   };
 
   return (

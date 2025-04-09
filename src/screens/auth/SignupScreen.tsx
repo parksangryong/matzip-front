@@ -14,10 +14,13 @@ import useForm from '../../hooks/useForm';
 // utils
 import {validateSignup} from '../../utils';
 
+// 회원 관련 훅
+import useAuth from '../../hooks/queries/useAuth';
+
 const SignupScreen = () => {
   const passwordRef = useRef<TextInput | null>(null);
   const passwordConfirmRef = useRef<TextInput | null>(null);
-
+  const {signupMutation, loginMutation} = useAuth();
   const signupForm = useForm({
     initialValues: {
       email: '',
@@ -28,7 +31,13 @@ const SignupScreen = () => {
   });
 
   const handleSubmit = () => {
-    console.log(signupForm.values);
+    const {email, password} = signupForm.values;
+
+    signupMutation.mutate(signupForm.values, {
+      onSuccess: () => {
+        loginMutation.mutate({email, password});
+      },
+    });
   };
 
   return (
